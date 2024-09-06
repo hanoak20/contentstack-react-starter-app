@@ -5,11 +5,12 @@ import parse from "html-react-parser";
 
 import ArchiveRelative from "../components/archive-relative";
 import RenderComponents from "../components/render-components";
-import { getPageRes, getBlogPostRes } from "../helper";
+import { getPageRes, getBlogPostRes, getuserIdCookie } from "../helper";
 import Skeleton from "react-loading-skeleton";
 import { useLivePreviewCtx } from "../context/live-preview-context-provider";
 import { BlogPostRes, Page } from "../typescript/pages";
 import { EntryProps } from "../typescript/components";
+import {analytics} from "../utils/segment-analytics";
 
 export default function BlogPost({entry}:{entry:({page, blogPost}:EntryProps)=> void}) {
   const lpTs = useLivePreviewCtx();
@@ -29,6 +30,9 @@ export default function BlogPost({entry}:{entry:({page, blogPost}:EntryProps)=> 
       (!banner || !post) && setError(true);
       setEntry({ banner, post });
       entry({ page: [banner], blogPost: [post] });
+      analytics.identify(getuserIdCookie(), {
+        blog_category: post.category
+      });
     } catch (error) {
       console.error(error);
       setError(true);

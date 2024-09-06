@@ -87,3 +87,22 @@ export const getBlogPostRes = async (
   liveEdit && addEditableTags(response[0], "blog_post", true);
   return response[0];
 };
+
+export const setUserIdCookie = async () => {
+  if (
+    !document.cookie.includes("userId") ||
+    document.cookie
+      .split(";")
+      .filter((item) => item.trim().startsWith("userId"))[0]
+      .split("=")[1].length == 0
+  ) {
+    const userId = Math.random().toString(36).substring(2, 15);
+    document.cookie = `userId= ${userId}`;
+  }
+};
+
+export const getuserIdCookie = () =>
+  document.cookie
+    .split(";")
+    .filter((item) => item.trim().startsWith("userId"))[0]
+    ?.split("=")[1];

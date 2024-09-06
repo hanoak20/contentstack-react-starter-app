@@ -57,6 +57,7 @@ export type BlogPostRes = {
   seo: SEO;
   uid: string;
   body: string;
+  category: string;
   locale: string;
   author: [{ $: { uid: string; title: string }; uid: string; title: string }];
   date: string;

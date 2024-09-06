@@ -1,4 +1,6 @@
 import { Config, Region, LivePreview, Stack } from "contentstack";
+import Personalization from "@contentstack/personalization-sdk-js";
+
 const {
   REACT_APP_CONTENTSTACK_API_KEY,
   REACT_APP_CONTENTSTACK_DELIVERY_TOKEN,
@@ -8,7 +10,7 @@ const {
   REACT_APP_CONTENTSTACK_PREVIEW_TOKEN,
   REACT_APP_CONTENTSTACK_APP_HOST,
   REACT_APP_CONTENTSTACK_LIVE_PREVIEW,
-  REACT_APP_CONTENTSTACK_PREVIEW_HOST
+  REACT_APP_CONTENTSTACK_PREVIEW_HOST,
 } = process.env;
 
 // basic env validation
@@ -31,7 +33,10 @@ export const isLpConfigValid = () => {
 // set region
 const setRegion = (): Region => {
   let region = "US" as keyof typeof Region;
-  if (!!REACT_APP_CONTENTSTACK_REGION && REACT_APP_CONTENTSTACK_REGION !== "us") {
+  if (
+    !!REACT_APP_CONTENTSTACK_REGION &&
+    REACT_APP_CONTENTSTACK_REGION !== "us"
+  ) {
     region = REACT_APP_CONTENTSTACK_REGION.toLocaleUpperCase().replace(
       "-",
       "_"
@@ -42,13 +47,39 @@ const setRegion = (): Region => {
 // set LivePreview config
 const setLivePreviewConfig = (): LivePreview => {
   if (!isLpConfigValid())
-    throw new Error("Your LP config is set to true. Please make you have set all required LP config in .env");
+    throw new Error(
+      "Your LP config is set to true. Please make you have set all required LP config in .env"
+    );
   return {
     preview_token: REACT_APP_CONTENTSTACK_PREVIEW_TOKEN as string,
-    enable: REACT_APP_CONTENTSTACK_LIVE_PREVIEW as string === "true",
+    enable: (REACT_APP_CONTENTSTACK_LIVE_PREVIEW as string) === "true",
     host: REACT_APP_CONTENTSTACK_PREVIEW_HOST as string,
   } as LivePreview;
 };
+
+export const deserializeVariantIds = (variantsQueryParam: string) => {
+  return variantsQueryParam
+    .split(",")
+    .map((variantPair) => `cs_personalize_${variantPair.split("=").join("_")}`)
+    .join(",");
+};
+
+//personalization implementation
+class Plugin {
+  onRequest(_stack: any, request: any) {
+    const variants = Personalization.getVariants();
+    console.info("in Plugin: ", variants);
+    const params = Object.entries(variants)
+      .map(([key, value]) => `${key}=${value}`)
+      .join(",");
+    request.option.headers["x-cs-variant-uid"] = deserializeVariantIds(params);
+    return request;
+  }
+  onResponse(stack: any, request: any, response: any, data: any) {
+    return data;
+  }
+}
+
 // contentstack sdk initialization
 export const initializeContentStackSdk = (): Stack => {
   if (!isBasicConfigValid())
@@ -59,6 +90,7 @@ export const initializeContentStackSdk = (): Stack => {
     environment: REACT_APP_CONTENTSTACK_ENVIRONMENT as string,
     region: setRegion(),
     branch: REACT_APP_CONTENTSTACK_BRANCH || "main",
+    plugins: [new Plugin()],
   };
   if (REACT_APP_CONTENTSTACK_LIVE_PREVIEW === "true") {
     stackConfig.live_preview = setLivePreviewConfig();
@@ -66,7 +98,7 @@ export const initializeContentStackSdk = (): Stack => {
   return Stack(stackConfig);
 };
 // api host url
-export const customHostUrl = (baseUrl=''): string => {
+export const customHostUrl = (baseUrl = ""): string => {
   return baseUrl.replace("api", "cdn");
 };
 // generate prod api urls
