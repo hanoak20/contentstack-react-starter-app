@@ -17,10 +17,10 @@ type RenderComponentsProps ={
   contentTypeUid:string
   entryUid:string
   locale:string
+  entryUrl?:string
 }
 
-export default function RenderComponents({ pageComponents, blogsPage, contentTypeUid, entryUid, locale }:RenderComponentsProps) {
-    
+export default function RenderComponents({ pageComponents, blogsPage, contentTypeUid, entryUid, locale, entryUrl }:RenderComponentsProps) {
   return (
     <div data-pageref={entryUid} data-contenttype={contentTypeUid} data-locale={locale}>
       {pageComponents?.map((component, key: number) => {
@@ -39,7 +39,7 @@ export default function RenderComponents({ pageComponents, blogsPage, contentTyp
         }
         if (component.section) {
           return (
-            <Section section={component.section} key={`component-${key}`} />
+            <Section section={component.section} key={`component-${key}`} entryUrl={entryUrl ?? ""} />
           );
         }
         if (component.section_with_buckets) {

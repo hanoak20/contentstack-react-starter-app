@@ -3,7 +3,6 @@ import parse from 'html-react-parser';
 import { SectionWithHtmlCode as SectionWithHtmlProp } from "../typescript/components";
 
 export default function SectionWithHtmlCode({ embedObject }: {embedObject : SectionWithHtmlProp}) {
-
   if (embedObject.html_code_alignment === 'Left') {
     return (
       <div className='contact-page-section max-width'>

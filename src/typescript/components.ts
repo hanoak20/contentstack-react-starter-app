@@ -36,7 +36,7 @@ export type SectionWithBuckets = {
 };
 
 export type FromBlog = {
-  $:FromBlog
+  $: FromBlog;
   title_h2: string;
   view_articles: Link;
   featured_blogs: {
@@ -75,11 +75,11 @@ export type OurTeam = {
   title_h2: string;
   description: string;
   employees: {
-    $:{
+    $: {
       image: Img;
       name: string;
       designation: string;
-    }
+    };
     image: Img;
     name: string;
     designation: string;
@@ -95,12 +95,12 @@ export type SectionWithHtmlCode = {
 };
 
 export type Widget = {
+  title_h2: string;
+  type: string;
+  $: {
     title_h2: string;
     type: string;
-    $: {
-      title_h2: string;
-      type: string;
-    };
+  };
 };
 
 export type Seo = {

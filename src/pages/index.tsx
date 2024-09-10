@@ -7,6 +7,7 @@ import Skeleton from "react-loading-skeleton";
 import { useLivePreviewCtx } from "../context/live-preview-context-provider";
 import { EntryProps } from "../typescript/components";
 import { Page } from "../typescript/pages";
+import Personalization from "@contentstack/personalization-sdk-js";
 
 export default function Home({ entry }:{entry:({page, blogPost}:EntryProps)=> void}) {
   const lpTs = useLivePreviewCtx();
@@ -28,8 +29,15 @@ export default function Home({ entry }:{entry:({page, blogPost}:EntryProps)=> vo
     }
   }
 
+  const setImpression = () => {
+    if(entryUrl === "/about-us") {
+      Personalization.triggerImpression(process.env.REACT_APP_PERSONALIZATION_AB_EXPERIENCE_ID as string);
+    }
+  }
+
   useEffect(() => {
     fetchData();
+    setImpression();
     error && history("/404");
   }, [entryUrl, lpTs, error]);
 
@@ -39,6 +47,7 @@ export default function Home({ entry }:{entry:({page, blogPost}:EntryProps)=> vo
       contentTypeUid='page'
       entryUid={getEntries?.uid}
       locale={getEntries?.locale}
+      entryUrl={entryUrl}
     />
   ) : (
     <Skeleton count={5} height={400} />
