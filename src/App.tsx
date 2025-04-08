@@ -11,7 +11,7 @@ import "./styles/modal.css";
 import "@contentstack/live-preview-utils/dist/main.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import { EntryProps } from "./typescript/components";
-import Personalization from "@contentstack/personalization-sdk-js";
+import Personalization from "@contentstack/personalize-edge-sdk";
 import {setUserIdCookie, getuserIdCookie} from "./helper"
 
 const {
@@ -33,7 +33,7 @@ function App() {
     Personalization.setEdgeApiUrl(REACT_APP_PERSONALIZE_EDGE_API_URL as string);
     console.info("REACT_APP_PERSONALIZATION_PROJECT_UID : ", REACT_APP_PERSONALIZATION_PROJECT_UID)
     Personalization.init(REACT_APP_PERSONALIZATION_PROJECT_UID as string, {
-      edgeMode: true,
+      // edgeMode: true,
       userId: getuserIdCookie(),
     }).then(() => {
       console.log("Personalization SDK initialized")

@@ -1,5 +1,5 @@
 import { Config, Region, LivePreview, Stack } from "contentstack";
-import Personalization from "@contentstack/personalization-sdk-js";
+import Personalization from "@contentstack/personalize-edge-sdk";
 
 const {
   REACT_APP_CONTENTSTACK_API_KEY,
